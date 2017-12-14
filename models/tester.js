@@ -5,6 +5,9 @@ var testerSchema = new mongoose.Schema({
   lastName: String,
   alias: String,
   email: String,
-  languages: String[]
+  languages: [String]
+},{
+  timestamps: true
 });
-mongoose.model('Tester',testerSchema);
+var Testers = mongoose.model('Tester',testerSchema);
+module.exports = Testers;
