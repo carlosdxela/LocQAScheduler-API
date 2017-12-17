@@ -1,17 +1,30 @@
 var mongoose = require('mongoose');
-var projectSchema = new mongoose.Schema({
+var assignmentSchema = new mongoose.Schema({
   id: String,
-  projectName: String
-  tasks: [TaskSchema]
+  language: String,
+  tester: { type: mongoose.Schema.Types.ObjectId, ref: 'Tester'}
 },{
   timestamps: true
 });
+
 var taskSchema = new mongoose.Schema({
   id: String,
   taskName: String,
   startDate: Date,
-  finishDate: Date
-})
+  finishDate: Date,
+  assignments: [assignmentSchema]
+},{
+  timestamps: true
+});
+
+var projectSchema = new mongoose.Schema({
+  id: String,
+  projectName: String,
+  languages: [String],
+  tasks: [taskSchema]
+},{
+  timestamps: true
+});
 
 var Projects = mongoose.model('Project',projectSchema);
-module.exports = Project;
+module.exports = Projects;
