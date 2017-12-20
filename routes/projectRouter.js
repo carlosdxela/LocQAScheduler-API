@@ -13,26 +13,36 @@ module.exports = projectRouter;
 
 projectRouter.route('/')
 .get(function(req, res, next){
+  console.log("Received get request on /projects.");
   Projects.find({}, function(err, project){
     if(err) throw err;
     res.json(project);
   });
 })
 .post(function(req, res, next){
+  console.log("Received post request on /projects/ with " + JSON.stringify(req.body));
   Projects.create(req.body, function(err, project){
     if (err) throw err;
+    if (!project)
+    {
+      sendJSONresponse(res, 404, {"message":"Projects is undefined."});
+    }
+    else {
+      if (err) {
+        console.log("Found error " + err);
+        throw err};
+      var id = project._id;
+      console.log('Project created! with id: ' + id);
+      res.json(project);
+    }
 
-    console.log('Project created!');
-    var id = project._id;
-    res.writeHead(200, {
-      'Content-Type': 'text/plain'
-    });
-    res.end('Added the project with id: ' + id);
+
   })
 });
 
 projectRouter.route('/:projectId')
 .get(function(req, res, next){
+  console.log("Received get request on /projects/:projectId");
       Projects.findById(req.params.projectId,
         function(err, project){
         if (err) throw err;
@@ -41,6 +51,7 @@ projectRouter.route('/:projectId')
 })
 
 .put(function(req, res, next){
+  console.log("Received put request on /projects/:projectId with " + JSON.stringify(req.body));
   Projects.findByIdAndUpdate(req.params.projectId, {
     $set: req.body
   }, {
@@ -60,6 +71,7 @@ projectRouter.route('/:projectId')
 
 projectRouter.route('/:projectId/tasks')
 .get(function(req, res, next){
+  console.log("Received get at /projects/:projectId/tasks ");
   Projects.findById(req.params.projectId)
     .exec(function (err, project){
       if(err) next(err);
@@ -67,6 +79,7 @@ projectRouter.route('/:projectId/tasks')
     });
 })
 .post(function(req, res, next){
+  console.log("Received post request at /projects/:projectId/tasks with " + JSON.stringify(req.body));
   Projects.findById(req.params.projectId, function(err, project){
     if(err) next(err);
     var newTask = new Tasks();
@@ -95,6 +108,7 @@ projectRouter.route('/:projectId/tasks')
 
 projectRouter.route('/:projectId/tasks/:taskId')
 .get(function(req, res, next){
+  console.log("Received get requests in /projects/:projectId/tasks/:taskId");
   Projects.findById(req.params.projectId)
     .exec(function(err, project){
       if(err) next(err);
@@ -102,6 +116,7 @@ projectRouter.route('/:projectId/tasks/:taskId')
     });
 })
 .put(function(req, res, next){
+  console.log("Received put request at /projects/:projectId/tasks/:taskId");
   Projects.findById(req.params.projectId, function(err, project){
     if(err) next(err);
     //project.tasks.id(req.params.taskId).remove();
@@ -115,6 +130,7 @@ projectRouter.route('/:projectId/tasks/:taskId')
   });
 })
 .delete(function(req, res, next){
+  console.log("Received put request at /projects/:projectId/tasks/:taskId");
   Projects.findById(req.params.projectId, function(err, project){
     if (err) next(err);
     //project.tasks.id(req.params.taskId).remove();
@@ -148,7 +164,7 @@ projectRouter.route('/:projectId/tasks/:taskId/assignments')
         var task = project.tasks.id(req.params.taskId);
         for (i = 0; i < task.assignments.length; i++)
         {
-          if (task.assignments[i].language == lang){            
+          if (task.assignments[i].language == lang){
             if (req.body.tester){
               task.assignments[i].tester = req.body.tester;
             }
