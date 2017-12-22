@@ -14,7 +14,9 @@ module.exports = projectRouter;
 projectRouter.route('/')
 .get(function(req, res, next){
   console.log("Received get request on /projects.");
-  Projects.find({}, function(err, project){
+  Projects.find(req.query)
+    .populate('assignments.tester')
+    .exec(function(err, project){
     if(err) throw err;
     res.json(project);
   });
@@ -43,8 +45,9 @@ projectRouter.route('/')
 projectRouter.route('/:projectId')
 .get(function(req, res, next){
   console.log("Received get request on /projects/:projectId");
-      Projects.findById(req.params.projectId,
-        function(err, project){
+      Projects.findById(req.params.projectId)
+      .populate('assignments.tester')
+      .exec(function(err, project){
         if (err) throw err;
         res.json(project);
       });
@@ -73,6 +76,7 @@ projectRouter.route('/:projectId/tasks')
 .get(function(req, res, next){
   console.log("Received get at /projects/:projectId/tasks ");
   Projects.findById(req.params.projectId)
+    .populate('assignments.tester')
     .exec(function (err, project){
       if(err) next(err);
       res.json(project.tasks);
@@ -110,6 +114,7 @@ projectRouter.route('/:projectId/tasks/:taskId')
 .get(function(req, res, next){
   console.log("Received get requests in /projects/:projectId/tasks/:taskId");
   Projects.findById(req.params.projectId)
+    .populate('assignments.tester')
     .exec(function(err, project){
       if(err) next(err);
       res.json(project.tasks.id(req.params.taskId));
@@ -145,6 +150,7 @@ projectRouter.route('/:projectId/tasks/:taskId')
 projectRouter.route('/:projectId/tasks/:taskId/assignments')
 .get(function(req, res, next){
   Projects.findById(req.params.projectId)
+    .populate('assignments.tester')
     .exec(function(err, project){
       if(err) next(err);
       var task = project.tasks.id(req.params.taskId);
@@ -170,7 +176,13 @@ projectRouter.route('/:projectId/tasks/:taskId/assignments')
             }
           }
         }
-        res.json(task.assignments);
+        project.save(function(err, project){
+          if(err) next(err);
+          console.log('Updated assignments');
+          res.json(task.assignments);
+
+        });
+
       });
   }
 

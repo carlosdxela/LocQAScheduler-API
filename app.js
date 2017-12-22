@@ -14,6 +14,7 @@ var users = require('./routes/users');
 
 var testerRouter = require('./routes/testerRouter');
 var projectRouter = require('./routes/projectRouter');
+var allassignmentsRouter = require('./routes/assignmentsRouter');
 
 var app = express();
 
@@ -33,7 +34,7 @@ app.use('/', index);
 app.use('/users', users);
 app.use('/testers',testerRouter);
 app.use('/projects',projectRouter);
-
+app.use('/assignments', allassignmentsRouter);
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   var err = new Error('Not Found');

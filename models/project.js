@@ -1,8 +1,21 @@
 var mongoose = require('mongoose');
+
+var testerSchema = new mongoose.Schema({
+  id: String,
+  firstName: String,
+  lastName: String,
+  alias: String,
+  email: String,
+  languages: [String]
+},{
+  timestamps: true
+});
+var Testers = mongoose.model('Tester1',testerSchema);
+
 var assignmentSchema = new mongoose.Schema({
   id: String,
   language: String,
-  tester: { type: mongoose.Schema.Types.ObjectId, ref: 'Tester'}
+  tester: { type: mongoose.Schema.Types.ObjectId, ref: 'Tester1'}
 },{
   timestamps: true
 });
